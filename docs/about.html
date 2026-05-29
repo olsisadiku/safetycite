@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SafetyCite — what it is &amp; how it works</title>
+<style>
+  :root{
+    --bg:#0b0c0f; --panel:#15161a; --panel2:#1c1d22; --line:#2c2d33;
+    --ink:#e9e9ee; --mut:#9aa0aa; --amber:#f5a300; --amber2:#ffc24d;
+    --green:#34d399; --red:#f87171; --blue:#7cc4ff;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--amber2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .stripe{height:6px;background:repeating-linear-gradient(-45deg,#f5a300,#f5a300 14px,#18181b 14px,#18181b 28px)}
+  .wrap{max-width:920px;margin:0 auto;padding:0 22px}
+  header.hero{padding:54px 0 30px;border-bottom:1px solid var(--line);background:radial-gradient(900px 380px at 70% -10%,rgba(245,163,0,.14),transparent)}
+  .logo{display:inline-flex;align-items:center;gap:14px;margin-bottom:18px}
+  .glyph{width:46px;height:46px;border-radius:12px;background:var(--amber);color:#111;font-weight:900;font-size:26px;display:flex;align-items:center;justify-content:center}
+  h1{font-size:40px;line-height:1.1;margin:.1em 0 .15em}
+  .tag{font-size:19px;color:var(--mut);max-width:680px}
+  .pills{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+  .pill{font-size:12.5px;border:1px solid var(--line);background:var(--panel);color:var(--mut);padding:6px 11px;border-radius:999px}
+  .pill b{color:var(--ink);font-weight:600}
+  section{padding:38px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin:0 0 8px}
+  h3{font-size:25px;margin:.1em 0 .4em}
+  p{color:#cfd2d8}
+  .lead{font-size:18px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px}
+  .card h4{margin:.1em 0 .35em;font-size:17px}
+  .card p{margin:0;color:var(--mut);font-size:14.5px}
+  .card .k{font-family:var(--mono);font-size:12.5px;color:var(--amber2)}
+  code,pre{font-family:var(--mono)}
+  pre{background:#0e0f13;border:1px solid var(--line);border-radius:12px;padding:16px;overflow:auto;font-size:13px;color:#d7dae0}
+  .pipe{background:#0e0f13;border:1px solid var(--line);border-radius:12px;padding:18px;font-family:var(--mono);font-size:12.8px;color:#cdd2da;white-space:pre;overflow:auto}
+  .reward{background:linear-gradient(180deg,#16171c,#121317);border:1px solid var(--line);border-radius:14px;padding:20px;text-align:center;font-family:var(--mono);font-size:16px}
+  .reward .c{color:var(--green)} .reward .f{color:var(--blue)} .reward .h{color:var(--red)}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--mut);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+  td.base{color:var(--mut)} td .up{color:var(--green);font-weight:600}
+  .mono{font-family:var(--mono)}
+  .chip{display:inline-flex;gap:6px;align-items:center;font-family:var(--mono);font-size:12.5px;padding:3px 8px;border-radius:7px;border:1px solid}
+  .ok{border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.1);color:#9af0cf}
+  .bad{border-color:rgba(248,113,113,.45);background:rgba(248,113,113,.1);color:#f4b4b4}
+  .muted{color:var(--mut);font-size:13.5px}
+  footer{padding:34px 0 60px;color:var(--mut);font-size:13px;text-align:center}
+  .note{background:rgba(245,163,0,.07);border:1px solid rgba(245,163,0,.25);border-radius:12px;padding:14px 16px;color:#e8d9b6;font-size:14px}
+  ul{color:#cfd2d8} li{margin:.2em 0}
+</style>
+</head>
+<body>
+<div class="stripe"></div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="logo"><div class="glyph">§</div><div style="font-weight:700;font-size:15px;letter-spacing:.02em">SafetyCite</div></div>
+    <h1>An OSHA Compliance Copilot that <span style="color:var(--amber2)">cites the law — verifiably</span>.</h1>
+    <p class="tag">Small language models, fine-tuned with reinforcement learning, that answer workplace-safety questions <b style="color:var(--ink)">and cite the correct OSHA standard</b> (29&nbsp;CFR) — where every citation is checked against the real federal regulation.</p>
+    <div class="pills">
+      <span class="pill"><b>MinT</b> · Tinker-compatible LoRA RL</span>
+      <span class="pill"><b>GRPO</b> · verifiable reward</span>
+      <span class="pill"><b>Qwen3</b> · 0.6B → 4B</span>
+      <span class="pill"><b>FastAPI</b> + React/Vite/Tailwind</span>
+      <span class="pill"><b>Live</b> · no mocks</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>The idea</h2>
+    <h3>Most doc-chatbots can't tell you if they're right. OSHA can.</h3>
+    <p class="lead">When someone asks about fall protection in construction, the correct answer cites a specific regulation — <span class="mono" style="color:var(--amber2)">29 CFR §1926.501</span> — and that citation is <b>checkable ground truth</b>, not a matter of opinion.</p>
+    <p>That makes OSHA the rare domain where <b>reinforcement learning with a verifiable reward</b> is the natural fit. SafetyCite trains the model with that exact signal: did it cite the right standard, in the right format, without inventing section numbers? Because the reward is objective, you get a hard, demoable result — <b>citation accuracy goes up, hallucinated citations go down</b>, measured on held-out questions.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>How it works</h2>
+    <h3>From the real regulation to a verified answer</h3>
+    <div class="pipe">  ASK ──▶ Router ──▶ Adapter (LoRA)  ─┬─▶  plain-language answer + [29 CFR §xxxx.xx]
+                                      └─▶  Corpus index ─▶ verify each citation exists + show its text
+
+  TRAIN  eCFR corpus ─▶ Q&amp;A datasets ─▶ SFT ─▶ GRPO (citation reward) ─▶ adapter ─▶ eval
+  ENGINES (all live, swappable)   Local HF (MPS · CUDA · CPU)    |    MinT (remote GPUs)</div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card"><div class="k">1 · CORPUS</div><h4>Real federal text</h4><p>Pulls live 29 CFR sections (Construction 1926, General Industry 1910, Recordkeeping 1904) from the public <b>eCFR API</b> and indexes them. This index is the single source of truth for verifying citations.</p></div>
+      <div class="card"><div class="k">2 · TRAIN</div><h4>SFT, then GRPO</h4><p>Supervised fine-tuning teaches the answer format; <b>GRPO</b> then samples several answers per question, scores each with the verifiable reward, and reinforces the better-cited ones.</p></div>
+      <div class="card"><div class="k">3 · SERVE</div><h4>Verified, live</h4><p>A FastAPI server runs the real model, parses citations from each answer, and checks them against the corpus so the UI can show the <b>actual regulatory text</b> — and flag anything invented.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The verifiable reward</h2>
+    <h3>One deterministic function — no judge model</h3>
+    <div class="reward">
+      reward = <span class="c">citation&nbsp;F1</span> &nbsp;+&nbsp; <span class="f">format</span> &nbsp;−&nbsp; <span class="h">hallucination&nbsp;penalty</span>
+    </div>
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card"><h4 style="color:var(--green)">Citation F1</h4><p>Set-overlap (F1, not recall) between cited and correct sections — so over-citing is penalised, not rewarded.</p></div>
+      <div class="card"><h4 style="color:var(--blue)">Format</h4><p>Rewards a real plain-language answer plus a well-formed <span class="mono">[29 CFR §…]</span> citation the UI can parse.</p></div>
+      <div class="card"><h4 style="color:var(--red)">Hallucination penalty</h4><p>Every cited section must exist in the corpus. Inventing a section number is punished — this is what makes it trustworthy.</p></div>
+    </div>
+    <p class="muted" style="margin-top:14px">The same function is both the RL training signal <i>and</i> the evaluation metric — fully reproducible, with no second LLM grading the first.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Mixture of compliance experts</h2>
+    <h3>One adapter per OSHA domain</h3>
+    <p>Instead of one model spread thin, SafetyCite trains a separate lightweight <b>LoRA adapter</b> per regulatory domain and routes each question to the right one — hot-swappable on a single shared base model.</p>
+    <div class="grid g3">
+      <div class="card"><div class="k">29 CFR 1926</div><h4>Construction</h4><p>Falls, scaffolds, excavations, ladders, silica, steel erection.</p></div>
+      <div class="card"><div class="k">29 CFR 1910</div><h4>General Industry</h4><p>Lockout/tagout, HazCom, respirators, machine guarding, confined spaces.</p></div>
+      <div class="card"><div class="k">29 CFR 1904</div><h4>Recordkeeping</h4><p>Recordability, work-relatedness, the 300 log, fatality &amp; hospitalization reporting.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Does training actually help?</h2>
+    <h3>Measured base → fine-tuned (held-out test sets)</h3>
+    <table>
+      <thead><tr><th>Domain</th><th>Citation F1</th><th>Format</th><th>Hallucination</th><th>Reward</th></tr></thead>
+      <tbody>
+        <tr><td>Construction <span class="muted mono">(SFT→RL)</span></td><td class="base">0.00 → <span class="up">0.17</span></td><td class="base">0.45 → <span class="up">1.00</span></td><td class="base">0.70 → <span class="up">0.10</span></td><td class="base">−0.26 → <span class="up">+0.32</span></td></tr>
+        <tr><td>General Industry <span class="muted mono">(SFT)</span></td><td class="base">0.00 → <span class="up">0.37</span></td><td class="base">0.25 → <span class="up">1.00</span></td><td class="base">1.00 → <span class="up">0.05</span></td><td class="base">−0.45 → <span class="up">+0.54</span></td></tr>
+        <tr><td>Recordkeeping <span class="muted mono">(SFT)</span></td><td class="base">0.00 → <span class="up">0.17</span></td><td class="base">0.50 → <span class="up">1.00</span></td><td class="base">1.00 → <span class="up">0.00</span></td><td class="base">−0.40 → <span class="up">+0.37</span></td></tr>
+      </tbody>
+    </table>
+    <p class="muted" style="margin-top:14px">The base <span class="mono">Qwen3-0.6B</span> gets <b>0% citation accuracy</b> and invents sections 70–100% of the time. After training: perfect format, near-zero hallucination, and a clean climb in reward. Exact-citation accuracy is modest at 0.6B — it scales with model size (e.g. <span class="mono">Qwen3-4B-Instruct</span> on Colab/MinT), more RL steps, and more data.</p>
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card"><h4>Base model</h4><p style="margin-bottom:8px">“…the standard that applies is <b>29 CFR 1926.1001</b>.”</p><span class="chip bad">✗ 1926.1001 — hallucinated</span></div>
+      <div class="card"><h4>Fine-tuned adapter</h4><p style="margin-bottom:8px">“Workers on a surface with an unprotected edge 6 ft or more above a lower level must be protected… <b>[29 CFR §1926.502]</b>”</p><span class="chip ok">✓ 1926.502 — verified in corpus</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The interface</h2>
+    <h3>Built to be inspected, not trusted blindly</h3>
+    <ul>
+      <li><b>Verifiable citations</b> — every citation is a chip you can click to read the actual CFR text; a ✓/✗ badge shows whether the section is real.</li>
+      <li><b>Base vs fine-tuned</b> — a side-by-side toggle that runs the un-trained model too, so the improvement is visible per question.</li>
+      <li><b>Auto-routing</b> — the question is routed to the right domain adapter, and the UI shows which one answered and why.</li>
+      <li><b>Evaluation dashboard</b> — base-vs-adapter metrics per domain (citation F1, format, hallucination) so the numbers above are live, not slideware.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Run it</h2>
+    <h3>Three ways, all running a real model</h3>
+    <div class="note" style="margin-bottom:14px"><b>Primary path — Colab (free GPU, public URL).</b> Open <span class="mono">notebooks/colab_app.ipynb</span>, pick a T4 GPU, run all cells: it clones, installs, fetches the corpus, trains the adapters on <span class="mono">Qwen3-4B-Instruct-2507</span>, builds the UI, serves the real model, and prints a public <span class="mono">cloudflared</span> link.</div>
+    <pre># Local (Apple Silicon / MPS)
+uv venv &amp;&amp; uv pip install -e ".[local]"
+uv run safetycite fetch          # real OSHA text from eCFR
+uv run safetycite build          # build Q&amp;A datasets
+uv run safetycite sft construction   # real LoRA fine-tuning
+uv run safetycite rl  construction   # GRPO with the verifiable reward
+uv run safetycite eval construction  # base vs adapter
+uv run safetycite serve          # API + UI on :8000
+
+# Remote MinT GPUs
+export SAFETYCITE_BACKEND=mint TINKER_API_KEY=sk-mint-...
+safetycite sft construction --backend mint</pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Under the hood</h2>
+    <div class="grid g2">
+      <div class="card"><h4>Training</h4><p>MinT (Tinker-compatible) for remote LoRA SFT/GRPO, or Hugging Face <span class="mono">transformers + peft</span> locally. A custom GRPO loop scores groups of samples with the verifiable reward and back-props per sample to stay memory-light.</p></div>
+      <div class="card"><h4>Serving &amp; UI</h4><p>FastAPI serves the real model and the corpus; a Bun + React + Vite + Tailwind front-end renders verified citations, the base/fine-tuned comparison, and the eval dashboard.</p></div>
+      <div class="card"><h4>Data</h4><p>Corpus and datasets are generated from the live eCFR API; every gold citation is validated against the corpus before it's used for training or evaluation.</p></div>
+      <div class="card"><h4>Quality</h4><p>The reward logic and corpus index are covered by unit tests; the whole pipeline is reproducible from a single CLI.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    SafetyCite — a research/educational demo. Outputs are <b>not legal advice</b>; verify every citation against the official Code of Federal Regulations.<br/>
+    Built on <a href="https://mint-doc.macaron.im">MinT</a> · regulations from <a href="https://www.ecfr.gov">eCFR</a>.
+  </div>
+</footer>
+</body>
+</html>

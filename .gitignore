@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Node / Bun
+node_modules/
+web/dist/
+bun.lockb
+
+# Env
+.env
+
+# Generated artifacts (keep a small committed sample under data/corpus/sample)
+data/corpus/*.json
+!data/corpus/sample/
+data/datasets/*/
+data/adapters/*/
+*.safetensors
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
