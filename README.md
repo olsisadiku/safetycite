@@ -45,7 +45,8 @@ Engines (swappable, all live):   Local/HF (MPS·CUDA·CPU)   |   MinT (remote)
 ## Quickstart
 
 ### ▶ Colab (primary — free GPU, public URL)
-Open **`notebooks/colab_app.ipynb`** in Colab, set a T4 GPU, set `REPO_URL`, and run all cells.
+Open **`notebooks/colab_app.ipynb`** in Colab, pick a T4 GPU, and **Run all** (`REPO_URL` is
+already set to this repo; only change it if you fork/rename).
 It clones, installs, fetches the corpus, trains the adapters, builds the UI, serves the real model,
 and prints a public **cloudflared** `https://…trycloudflare.com` link.
 
