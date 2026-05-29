@@ -51,21 +51,24 @@ and prints a public **cloudflared** `https://…trycloudflare.com` link.
 
 ### ▶ This Mac (Apple Silicon / MPS)
 ```bash
-uv venv && uv pip install -e ".[local]"      # core + torch/transformers/peft
-uv run safetycite fetch                       # real OSHA text from eCFR  -> data/corpus/
-uv run safetycite build                       # Q&A datasets             -> data/datasets/
-uv run safetycite sft construction            # train a LoRA adapter (real, on MPS)
-uv run safetycite rl  construction            # refine with GRPO (verifiable reward)
-uv run safetycite eval construction           # base vs adapter report
-uv run safetycite serve                       # API + UI on :8000
+uv venv && source .venv/bin/activate         # activate so uv/safetycite use this env
+uv pip install -e ".[local]"                 # core + torch/transformers/peft
+safetycite fetch                              # real OSHA text from eCFR  -> data/corpus/
+safetycite build                              # Q&A datasets             -> data/datasets/
+safetycite sft construction                   # train a LoRA adapter (real, on MPS)
+safetycite rl  construction                   # refine with GRPO (verifiable reward)
+safetycite eval construction                  # base vs adapter report
+safetycite serve                              # API + UI on :8000
 # in another shell, for hot-reload dev UI:
 cd web && bun install && bun run dev          # :5173, proxies /api
 ```
-> `uv run` locks all extras; if the `mint` extra conflicts on your Python, use the venv directly
-> (`.venv/bin/safetycite …`) — see notes below.
+> Or just `make setup && make data && make sft && make serve`.
+> Avoid `uv run` here — it tries to co-lock the `mint` extra (needs Py≥3.11) and fails;
+> activating the venv (above) or the `Makefile` (which calls `.venv/bin/safetycite`) sidesteps it.
 
 ### ▶ MinT (remote GPUs)
 ```bash
+source .venv/bin/activate
 uv pip install -e ".[mint]"                   # tinker==0.6.3 (sk-mint-* keys)
 export SAFETYCITE_BACKEND=mint
 export TINKER_API_KEY=sk-mint-...             # macaron.im/mindlab/mint
